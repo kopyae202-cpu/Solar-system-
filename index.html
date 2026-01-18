@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar System 3D Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Solar System 3D Pro Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -12,53 +12,24 @@
     <div id="ui-layer">
         <div class="header">DEEP SPACE MONITOR 3D</div>
         <div class="controls">
-            <button onclick="togglePlay()">PAUSE/PLAY</button>
-            <input type="range" id="speedRange" min="0" max="5" step="0.1" value="1">
-            <label>SPEED</label>
+            <button onclick="togglePlay()" id="playPauseBtn">PAUSE/PLAY</button>
+            <div style="margin-top:10px;">
+                <label>WARP SPEED</label><br>
+                <input type="range" id="speedRange" min="0" max="5" step="0.1" value="1">
+            </div>
         </div>
     </div>
 
-    <div id="infoModal" class="modal" onclick="this.style.display='none'">
-        <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
             <h2 id="p-name"></h2>
             <div class="divider"></div>
             <p id="p-history"></p>
-            <p id="p-distance" style="color: #ffcc00; font-weight: bold;"></p>
-            <button class="close-btn" onclick="document.getElementById('infoModal').style.display='none'">CLOSE</button>
+            <p id="p-distance"></p>
+            <button class="close-btn" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
-        </div>
-
-        <div class="orbit" style="--d:620px; --s:60s">
-            <div class="planet-box" onclick="showInfo('URANUS')">
-                <img src="uranus.jpg" class="planet">
-            </div>
-        </div>
-
-        <div class="orbit" style="--d:720px; --s:80s">
-            <div class="planet-box" onclick="showInfo('NEPTUNE')">
-                <img src="neptune.jpg" class="planet">
-            </div>
-        </div>
-    </div>
-
-    <div id="infoModal" class="modal" onclick="closePopup()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h2 id="p-name"></h2>
-                <button class="close-btn" onclick="closePopup()">×</button>
-            </div>
-            <div class="modal-line"></div>
-            <p id="p-desc"></p>
-        </div>
-    </div>
-
-    <div class="comet"></div>
-    <script src="script.js"></script>
-</body>
-</html>
-
