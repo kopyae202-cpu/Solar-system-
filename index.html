@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Solar System 3D Pro Edition</title>
+    <title>Solar System 3D Cinematic</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+    <div id="space-overlay"></div>
     <div id="ui-layer">
-        <div class="header">DEEP SPACE MONITOR 3D</div>
-        <div class="controls">
-            <button onclick="togglePlay()" id="playPauseBtn">PAUSE/PLAY</button>
-            <div style="margin-top:10px;">
-                <label>WARP SPEED</label><br>
-                <input type="range" id="speedRange" min="0" max="5" step="0.1" value="1">
-            </div>
-        </div>
+        <div class="header">SPACE MONITOR v2.0</div>
+        <div class="stats">SYSTEM ACTIVE</div>
     </div>
 
     <div id="infoModal" class="modal">
@@ -25,8 +20,8 @@
             <h2 id="p-name"></h2>
             <div class="divider"></div>
             <p id="p-history"></p>
-            <p id="p-distance" style="color: #ffcc00; font-weight: bold; margin-top: 15px;"></p>
-            <button class="close-btn" onclick="closeModal()">CLOSE</button>
+            <p id="p-distance"></p>
+            <button class="close-btn" onclick="closeModal()">BACK TO SPACE</button>
         </div>
     </div>
 
