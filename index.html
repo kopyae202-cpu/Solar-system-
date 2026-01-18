@@ -1,94 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Solar Luxury Pro</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Solar Luxury Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <div id="dust-particles"></div>
+    <div class="nebula-overlay"></div>
 
-<div id="dust-particles"></div>
-<div class="nebula-overlay"></div>
-
-<div class="system-ui">
-    <div class="ui-header">
-        <span>DEEP SPACE MONITOR</span>
-        <div class="blink-dot"></div>
-    </div>
-
-    <div class="ui-controls">
-        <button onclick="togglePlay()" id="playPauseBtn">PAUSE</button>
-        <button onclick="resetSpeed()">RESET</button>
-    </div>
-
-    <div class="ui-slider">
-        <label>WARP DRIVE: <span id="speedVal">1.0</span>x</label>
-        <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1"
-               oninput="updateSpeed(this.value)">
-    </div>
-</div>
-
-<div class="solar-system">
-
-    <div class="sun-container" onclick="showInfo('THE SUN')">
-        <img src="image/sun.jpg" class="sun">
-    </div>
-
-    <div class="orbit" data-speed="6" style="--d:120px;--s:6s">
-        <div class="planet-box" onclick="showInfo('MERCURY')">
-            <img src="image/mercury.jpg" class="planet">
+    <div class="system-ui">
+        <div class="ui-header">
+            <span>DEEP SPACE MONITOR</span>
+            <div class="blink-dot"></div>
+        </div>
+        <div class="ui-controls">
+            <button onclick="togglePlay()" id="playPauseBtn">PAUSE</button>
+            <button onclick="resetSpeed()">RESET</button>
+        </div>
+        <div class="ui-slider">
+            <label>WARP DRIVE: <span id="speedVal">1.0</span>x</label>
+            <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1" oninput="updateSpeed(this.value)">
         </div>
     </div>
 
-    <div class="orbit" data-speed="10" style="--d:170px;--s:10s">
-        <div class="planet-box" onclick="showInfo('VENUS')">
-            <img src="image/venus.jpg" class="planet">
+    <div class="solar-system">
+        <div class="sun-container" onclick="showInfo('THE SUN')">
+            <img src="sun.jpg" class="sun">
+        </div>
+
+        <div class="orbit" style="--d:120px; --s:6s">
+            <div class="planet-box" onclick="showInfo('MERCURY')">
+                <img src="mercury.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:170px; --s:10s">
+            <div class="planet-box" onclick="showInfo('VENUS')">
+                <img src="venus.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:230px; --s:15s">
+            <div class="planet-box" onclick="showInfo('EARTH')">
+                <img src="earth.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:290px; --s:20s">
+            <div class="planet-box" onclick="showInfo('MARS')">
+                <img src="mars.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:400px; --s:35s">
+            <div class="planet-box" onclick="showInfo('JUPITER')">
+                <img src="Jupiter.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:520px; --s:45s">
+            <div class="planet-box" onclick="showInfo('SATURN')">
+                <img src="saturn.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:620px; --s:60s">
+            <div class="planet-box" onclick="showInfo('URANUS')">
+                <img src="uranus.jpg" class="planet">
+            </div>
+        </div>
+
+        <div class="orbit" style="--d:720px; --s:80s">
+            <div class="planet-box" onclick="showInfo('NEPTUNE')">
+                <img src="neptune.jpg" class="planet">
+            </div>
         </div>
     </div>
 
-    <div class="orbit" data-speed="15" style="--d:230px;--s:15s">
-        <div class="planet-box" onclick="showInfo('EARTH')">
-            <img src="image/earth.jpg" class="planet">
+    <div id="infoModal" class="modal" onclick="closePopup()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="p-name"></h2>
+                <button class="close-btn" onclick="closePopup()">×</button>
+            </div>
+            <div class="modal-line"></div>
+            <p id="p-desc"></p>
         </div>
     </div>
 
-    <div class="orbit" data-speed="20" style="--d:290px;--s:20s">
-        <div class="planet-box" onclick="showInfo('MARS')">
-            <img src="image/mars.jpg" class="planet">
-        </div>
-    </div>
-
-    <div class="orbit" data-speed="35" style="--d:400px;--s:35s">
-        <div class="planet-box" onclick="showInfo('JUPITER')">
-            <img src="image/Jupiter.jpg" class="planet">
-        </div>
-    </div>
-
-    <div class="orbit" data-speed="45" style="--d:520px;--s:45s">
-        <div class="planet-box" onclick="showInfo('SATURN')">
-            <img src="image/saturn.jpg" class="planet">
-        </div>
-    </div>
-
-</div>
-
-<div id="infoModal" class="modal" onclick="closePopup()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h2 id="p-name"></h2>
-            <button class="close-btn" onclick="closePopup()">×</button>
-        </div>
-        <div class="modal-line"></div>
-        <p id="p-desc"></p>
-    </div>
-</div>
-
-<div class="comet"></div>
-
-<script src="script.js"></script>
+    <div class="comet"></div>
+    <script src="script.js"></script>
 </body>
 </html>
+
