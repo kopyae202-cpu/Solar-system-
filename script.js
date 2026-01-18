@@ -2,6 +2,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
 const planetData = {
@@ -15,7 +16,7 @@ const planetData = {
     'NEPTUNE': { history: 'နေနှင့် အဝေးဆုံးမှာရှိပြီး လေပြင်းများ တိုက်ခတ်နေသည့် အပြာရောင်ဂြိုဟ်ဖြစ်သည်။', dist: 'ကမ္ဘာမှ ၄.၃ ဘီလီယံ ကီလိုမီတာ ကွာဝေးသည်။' }
 };
 
-// Background Stars
+// Stars Background
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i=0; i<10000; i++) starPos.push((Math.random()-0.5)*2000, (Math.random()-0.5)*2000, (Math.random()-0.5)*2000);
@@ -38,36 +39,45 @@ function makePlanet(size, tex, dist, name) {
 const sun = new THREE.Mesh(new THREE.SphereGeometry(4, 32, 32), new THREE.MeshBasicMaterial({map: loader.load('sun.jpg')}));
 scene.add(sun);
 
-makePlanet(0.5, 'mercury.jpg', 10, 'MERCURY');
-makePlanet(0.8, 'venus.jpg', 15, 'VENUS');
+makePlanet(0.6, 'mercury.jpg', 10, 'MERCURY');
+makePlanet(0.9, 'venus.jpg', 15, 'VENUS');
 makePlanet(1, 'earth.jpg', 20, 'EARTH');
-makePlanet(0.7, 'mars.jpg', 25, 'MARS');
+makePlanet(0.8, 'mars.jpg', 25, 'MARS');
 makePlanet(2.5, 'Jupiter.jpg', 35, 'JUPITER');
-makePlanet(2.2, 'saturn.jpg', 45, 'SATURN');
-makePlanet(1.5, 'uranus.jpg', 55, 'URANUS');
-makePlanet(1.5, 'neptune.jpg', 65, 'NEPTUNE');
+makePlanet(2.2, 'saturn.jpg', 48, 'SATURN');
+makePlanet(1.6, 'uranus.jpg', 58, 'URANUS');
+makePlanet(1.6, 'neptune.jpg', 68, 'NEPTUNE');
 
-camera.position.z = 60; camera.position.y = 20; camera.lookAt(0,0,0);
+camera.position.z = 70; camera.position.y = 30; camera.lookAt(0,0,0);
 
-// Interaction (နှိပ်ရင် စာပေါ်ဖို့)
+// Interaction Logic
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-window.addEventListener('click', (e) => {
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+function handleClick(e) {
+    const x = e.clientX || (e.touches && e.touches[0].clientX);
+    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    mouse.x = (x / window.innerWidth) * 2 - 1;
+    mouse.y = -(y / window.innerHeight) * 2 + 1;
+    
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children, true);
+    
     if(intersects.length > 0) {
-        const pName = intersects[0].object.userData.name;
-        if(pName) {
-            document.getElementById('p-name').innerText = pName;
-            document.getElementById('p-history').innerText = planetData[pName].history;
-            document.getElementById('p-distance').innerText = "Distance: " + planetData[pName].dist;
+        const obj = intersects[0].object;
+        const name = obj.userData.name;
+        if(name) {
+            document.getElementById('p-name').innerText = name;
+            document.getElementById('p-history').innerText = planetData[name].history;
+            document.getElementById('p-distance').innerText = "Earth Distance: " + planetData[name].dist;
             document.getElementById('infoModal').style.display = 'flex';
         }
     }
-});
+}
+
+window.addEventListener('mousedown', handleClick);
+window.addEventListener('touchstart', handleClick);
 
 let speed = 1;
 function animate() {
@@ -79,5 +89,13 @@ function animate() {
     renderer.render(scene, camera);
 }
 animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 function togglePlay() { speed = speed === 0 ? 1 : 0; }
+function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
 document.getElementById('speedRange').oninput = (e) => { speed = e.target.value; };
