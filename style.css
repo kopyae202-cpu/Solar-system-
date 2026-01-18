@@ -1,76 +1,36 @@
 body { 
-    margin: 0; 
-    padding: 0; 
-    overflow: hidden; 
-    background: #000; 
-    font-family: 'Orbitron', sans-serif; 
+    margin: 0; padding: 0; overflow: hidden; background: #000;
+    font-family: 'Orbitron', sans-serif;
 }
 
-canvas { 
-    display: block; 
-    width: 100vw; 
-    height: 100vh; 
+/* Screen ပေါ်မှာ အာကာသ အမှုန်အမွှား vibe ရအောင် */
+#space-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+    z-index: 1;
 }
 
-#ui-layer { 
-    position: absolute; 
-    top: 20px; 
-    left: 20px; 
-    z-index: 10; 
-    color: #00ffcc; 
-    pointer-events: none; 
+#ui-layer {
+    position: absolute; top: 30px; left: 20px; z-index: 10;
+    color: #00ffcc; pointer-events: none; border-left: 2px solid #00ffcc; padding-left: 10px;
 }
 
-.controls { 
-    pointer-events: auto; 
-    background: rgba(0, 255, 204, 0.1); 
-    padding: 15px; 
-    border-radius: 10px; 
-    border: 1px solid rgba(0, 255, 204, 0.3);
-    backdrop-filter: blur(5px);
-}
-
-button {
-    background: #00ffcc;
-    border: none;
-    padding: 8px 15px;
-    font-family: 'Orbitron';
-    cursor: pointer;
-    font-weight: bold;
-}
+.header { font-size: 14px; letter-spacing: 3px; font-weight: bold; }
+.stats { font-size: 10px; opacity: 0.7; margin-top: 5px; }
 
 .modal { 
-    display: none; 
-    position: fixed; 
-    z-index: 100; 
-    left: 0; top: 0; 
-    width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.85); 
-    align-items: center; 
-    justify-content: center; 
+    display: none; position: fixed; z-index: 100; left: 0; top: 0; 
+    width: 100%; height: 100%; background: rgba(0,0,0,0.9); 
+    align-items: center; justify-content: center; backdrop-filter: blur(8px);
 }
 
 .modal-content { 
-    background: #0a0a0a; 
-    border: 2px solid #00ffcc; 
-    padding: 30px; 
-    width: 85%; 
-    max-width: 450px;
-    color: white; 
-    border-radius: 15px; 
-    box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
-    text-align: center;
+    background: rgba(10, 10, 10, 0.9); border: 1px solid #00ffcc; 
+    padding: 30px; width: 85%; max-width: 400px; color: white; 
+    border-radius: 20px; text-align: center; box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
 }
 
-.divider { height: 2px; background: #00ffcc; margin: 15px 0; opacity: 0.5; }
-
-.close-btn { 
-    background: transparent; 
-    border: 1px solid #00ffcc; 
-    color: #00ffcc; 
-    padding: 10px 25px; 
-    margin-top: 20px;
-    cursor: pointer;
-}
-
-.close-btn:hover { background: #00ffcc; color: black; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, #00ffcc, transparent); margin: 20px 0; }
+#p-distance { color: #00ffcc; font-size: 13px; margin-top: 15px; }
+.close-btn { background: #00ffcc; color: #000; border: none; padding: 12px 30px; margin-top: 25px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; border-radius: 5px; }
