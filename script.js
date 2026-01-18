@@ -1,123 +1,83 @@
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
 const planetData = {
-    'THE SUN': 'နေအဖွဲ့အစည်း၏ ဗဟိုချက်ဖြစ်သည်။',
-    'MERCURY': 'နေနှင့် အနီးဆုံးဂြိုဟ်ဖြစ်သည်။',
-    'VENUS': 'အပူဆုံးဂြိုဟ်ဖြစ်သည်။',
-    'EARTH': 'သက်ရှိများရှင်သန်ရာ အပြာရောင်ဂြိုဟ်ဖြစ်သည်။',
-    'MARS': 'ဂြိုဟ်နီကြီးဟု လူသိများသည်။',
-    'JUPITER': 'အကြီးဆုံးသော ဓာတ်ငွေ့ဂြိုဟ်ကြီးဖြစ်သည်။',
-    'SATURN': 'လှပသော ရေခဲကွင်းများရှိသည်။'
-    'URANUS': 'ယူရေးနပ်စ်သည် အေးခဲနေသော ဓာတ်ငွေ့ဂြိုဟ်ကြီးဖြစ်ပြီး အလွန်အေးမြသည်။',
-'NEPTUNE': 'နက်ပကျွန်းသည် နေအဖွဲ့အစည်း၏ အပြင်ဘက်ဆုံးနှင့် အဝေးဆုံးဂြိုဟ်ဖြစ်သည်။'
+    'MERCURY': { history: 'နေနှင့်အနီးဆုံးဂြိုဟ်ဖြစ်ပြီး အလွန်ပူပြင်းသည်။ ရှေးဟောင်းရောမနတ်ဘုရား၏ အမည်ကို အစွဲပြုမှည့်ခေါ်ထားသည်။', dist: 'ကမ္ဘာမှ ၉၁.၇ သန်း ကီလိုမီတာ ကွာဝေးသည်။' },
+    'VENUS': { history: 'အရောင်အဝါအလွန်တောက်ပသဖြင့် သောကြာဂြိုဟ်ဟုခေါ်သည်။ လေထုထဲတွင် ကာဗွန်ဒိုင်အောက်ဆိုဒ် အလွန်များပြားသည်။', dist: 'ကမ္ဘာမှ ၄၁ သန်း ကီလိုမီတာ ကွာဝေးသည်။' },
+    'EARTH': { history: 'ကျွန်ုပ်တို့ နေထိုင်ရာ သက်ရှိများရှိသည့် တစ်ခုတည်းသော ဂြိုဟ်ဖြစ်သည်။', dist: 'မိခင်ကမ္ဘာမြေဖြစ်သည်။' },
+    'MARS': { history: 'အနီရောင်ဂြိုဟ်ဟု လူသိများသည်။ အတိတ်ကာလက ရေရှိခဲ့သည့် လက္ခဏာများရှိသဖြင့် သက်ရှိများ ရှာဖွေနေသည့် ဂြိုဟ်ဖြစ်သည်။', dist: 'ကမ္ဘာမှ ၇၈.၃ သန်း ကီလိုမီတာ ကွာဝေးသည်။' },
+    'JUPITER': { history: 'နေအဖွဲ့အစည်းတွင် အကြီးဆုံးဂြိုဟ်ဖြစ်သည်။ ဧရာမဓာတ်ငွေ့လုံးကြီးဖြစ်ပြီး ဂြိုဟ်ရံလပေါင်းများစွာ ရှိသည်။', dist: 'ကမ္ဘာမှ ၆၂၈.၇ သန်း ကီလိုမီတာ ကွာဝေးသည်။' },
+    'SATURN': { history: 'လှပသော ကွင်းများရှိသည့် ဂြိုဟ်ဖြစ်သည်။ နေအဖွဲ့အစည်း၏ ဒုတိယအကြီးဆုံးဂြိုဟ်ဖြစ်သည်။', dist: 'ကမ္ဘာမှ ၁.၂ ဘီလီယံ ကီလိုမီတာ ကွာဝေးသည်။' },
+    'URANUS': { history: 'ဘေးတိုက်လည်ပတ်နေသော ထူးခြားသည့် အေးခဲဓာတ်ငွေ့ဂြိုဟ်ဖြစ်သည်။', dist: 'ကမ္ဘာမှ ၂.၆ ဘီလီယံ ကီလိုမီတာ ကွာဝေးသည်။' },
+    'NEPTUNE': { history: 'နေနှင့် အဝေးဆုံးမှာရှိပြီး လေပြင်းများ တိုက်ခတ်နေသည့် အပြာရောင်ဂြိုဟ်ဖြစ်သည်။', dist: 'ကမ္ဘာမှ ၄.၃ ဘီလီယံ ကီလိုမီတာ ကွာဝေးသည်။' }
 };
 
-function showInfo(name) {
-    document.getElementById('p-name').innerText = name;
-    document.getElementById('p-desc').innerText = planetData[name];
-    document.getElementById('infoModal').style.display = 'block';
+// Background Stars
+const starGeo = new THREE.BufferGeometry();
+const starPos = [];
+for(let i=0; i<10000; i++) starPos.push((Math.random()-0.5)*2000, (Math.random()-0.5)*2000, (Math.random()-0.5)*2000);
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.7})));
+
+const loader = new THREE.TextureLoader();
+const planets = [];
+function makePlanet(size, tex, dist, name) {
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(size, 32, 32), new THREE.MeshBasicMaterial({map: loader.load(tex)}));
+    const pivot = new THREE.Object3D();
+    scene.add(pivot);
+    pivot.add(mesh);
+    mesh.position.x = dist;
+    mesh.userData = { name: name };
+    planets.push({ mesh, pivot, dist });
+    return mesh;
 }
 
-function closePopup() {
-    document.getElementById('infoModal').style.display = 'none';
-}
+const sun = new THREE.Mesh(new THREE.SphereGeometry(4, 32, 32), new THREE.MeshBasicMaterial({map: loader.load('sun.jpg')}));
+scene.add(sun);
 
-function updateSpeed(val) {
-    document.getElementById('speedVal').innerText = val;
-    document.querySelectorAll('.orbit').forEach(orbit => {
-        const base = orbit.dataset.speed;
-        orbit.style.animationDuration = (base / val) + 's';
-    });
-}
+makePlanet(0.5, 'mercury.jpg', 10, 'MERCURY');
+makePlanet(0.8, 'venus.jpg', 15, 'VENUS');
+makePlanet(1, 'earth.jpg', 20, 'EARTH');
+makePlanet(0.7, 'mars.jpg', 25, 'MARS');
+makePlanet(2.5, 'Jupiter.jpg', 35, 'JUPITER');
+makePlanet(2.2, 'saturn.jpg', 45, 'SATURN');
+makePlanet(1.5, 'uranus.jpg', 55, 'URANUS');
+makePlanet(1.5, 'neptune.jpg', 65, 'NEPTUNE');
 
-function togglePlay() {
-    const orbits = document.querySelectorAll('.orbit');
-    const paused = orbits[0].style.animationPlayState === 'paused';
-    orbits.forEach(o => o.style.animationPlayState = paused ? 'running' : 'paused');
-    document.getElementById('playPauseBtn').innerText = paused ? 'PAUSE' : 'PLAY';
-}
+camera.position.z = 60; camera.position.y = 20; camera.lookAt(0,0,0);
 
-function resetSpeed() {
-    document.getElementById('speedSlider').value = 1;
-    updateSpeed(1);
-}
+// Interaction (နှိပ်ရင် စာပေါ်ဖို့)
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
-/* COMET */
-function createComet() {
-    const comet = document.querySelector('.comet');
-    setTimeout(() => {
-        comet.style.left = Math.random() * 80 + 'vw';
-        comet.style.top = '-150px';
-        comet.style.opacity = 1;
-        comet.style.animation = 'flyComet 1.5s linear forwards';
-
-        setTimeout(() => {
-            comet.style.animation = 'none';
-            comet.style.opacity = 0;
-            createComet();
-        }, 1500);
-    }, 7000);
-}
-
-const style = document.createElement('style');
-style.innerHTML = `
-@keyframes flyComet {
-    from { transform: translate(-100px,-100px) rotate(135deg); }
-    to { transform: translate(120vw,120vh) rotate(135deg); }
-}`;
-document.head.appendChild(style);
-
-createComet();
-/* =====================
-   ZOOM & PINCH CONTROL
-===================== */
-
-let scale = 1;
-let startDist = 0;
-
-/* Mouse wheel zoom (Desktop) */
-document.addEventListener('wheel', e => {
-    e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(0.6, scale), 2.5);
-    document.querySelector('.solar-system').style.transform = `scale(${scale})`;
-}, { passive: false });
-
-/* Pinch zoom (Mobile) */
-document.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
-        startDist = getDistance(e.touches[0], e.touches[1]);
+window.addEventListener('click', (e) => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    if(intersects.length > 0) {
+        const pName = intersects[0].object.userData.name;
+        if(pName) {
+            document.getElementById('p-name').innerText = pName;
+            document.getElementById('p-history').innerText = planetData[pName].history;
+            document.getElementById('p-distance').innerText = "Distance: " + planetData[pName].dist;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
     }
 });
 
-document.addEventListener('touchmove', e => {
-    if (e.touches.length === 2) {
-        const newDist = getDistance(e.touches[0], e.touches[1]);
-        scale += (newDist - startDist) * 0.003;
-        scale = Math.min(Math.max(0.6, scale), 2.5);
-        document.querySelector('.solar-system').style.transform = `scale(${scale})`;
-        startDist = newDist;
-    }
-});
-
-function getDistance(t1, t2) {
-    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-}
-/* =====================
-   DYNAMIC SUN LIGHT
-===================== */
-
-function updateLight() {
-    const sun = document.querySelector('.sun-container').getBoundingClientRect();
-
-    document.querySelectorAll('.planet').forEach(p => {
-        const rect = p.getBoundingClientRect();
-        const angle = Math.atan2(
-            rect.top - sun.top,
-            rect.left - sun.left
-        ) * 180 / Math.PI;
-
-        p.style.setProperty('--light-angle', `${angle}deg`);
+let speed = 1;
+function animate() {
+    requestAnimationFrame(animate);
+    planets.forEach((p, i) => {
+        p.pivot.rotation.y += (0.01 / (i + 1)) * speed;
+        p.mesh.rotation.y += 0.02;
     });
-
-    requestAnimationFrame(updateLight);
+    renderer.render(scene, camera);
 }
-updateLight();
+animate();
+function togglePlay() { speed = speed === 0 ? 1 : 0; }
+document.getElementById('speedRange').oninput = (e) => { speed = e.target.value; };
