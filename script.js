@@ -5,10 +5,11 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 document.body.appendChild(renderer.domElement);
 
-// Lighting
-const sunLight = new THREE.PointLight(0xffffff, 2.5, 1000);
+// Lighting (အလင်းအမှောင်ကို ပိုအနုပညာဆန်အောင် ပြင်ထားတယ်)
+const sunLight = new THREE.PointLight(0xffffff, 3, 1000); // နေမင်းကြီးရဲ့ အလင်း
 scene.add(sunLight);
-scene.add(new THREE.AmbientLight(0x444444));
+const spaceLight = new THREE.AmbientLight(0x222222); // အမှောင်ထဲက အနည်းငယ်သော အလင်း
+scene.add(spaceLight);
 
 const planetData = {
     'MERCURY': { history: 'နေနှင့်အနီးဆုံး၊ အလွန်ပူပြင်းပြီး သံဓာတ်ကြွယ်ဝသော ဂြိုဟ်ဖြစ်သည်။', dist: 'Distance: 91.7 Million km' },
@@ -23,18 +24,21 @@ const planetData = {
 
 const loader = new THREE.TextureLoader();
 const planets = [];
-let targetPlanet = null; // Zoom ဆွဲရမယ့် ဂြိုဟ်ကို မှတ်ဖို့
+let targetPlanet = null; 
 let isZoomed = false;
 
-// Stars
+// Stars & Milky Way Effect
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i=0; i<15000; i++) starPos.push((Math.random()-0.5)*2000, (Math.random()-0.5)*2000, (Math.random()-0.5)*2000);
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.5})));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.7})));
 
 function createPlanet(size, tex, dist, name, hasRings = false) {
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(size, 64, 64), new THREE.MeshStandardMaterial({ map: loader.load(tex) }));
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(size, 64, 64),
+        new THREE.MeshStandardMaterial({ map: loader.load(tex), roughness: 0.8 })
+    );
     const pivot = new THREE.Object3D();
     scene.add(pivot);
     pivot.add(mesh);
@@ -42,7 +46,14 @@ function createPlanet(size, tex, dist, name, hasRings = false) {
     mesh.userData = { name: name, size: size };
 
     if(hasRings) {
-        const ring = new THREE.Mesh(new THREE.RingGeometry(size * 1.5, size * 2.5, 64), new THREE.MeshBasicMaterial({ map: loader.load(tex), side: THREE.DoubleSide, transparent: true, opacity: 0.5 }));
+        const ringGeo = new THREE.RingGeometry(size * 1.6, size * 2.6, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ 
+            map: loader.load('saturn.jpg'), 
+            side: THREE.DoubleSide, 
+            transparent: true, 
+            opacity: 0.5 
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI/2;
         mesh.add(ring);
     }
@@ -54,16 +65,17 @@ function createPlanet(size, tex, dist, name, hasRings = false) {
 const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(6, 64, 64), new THREE.MeshBasicMaterial({ map: loader.load('sun.jpg') }));
 scene.add(sunMesh);
 
-createPlanet(0.8, 'mercury.jpg', 15, 'MERCURY');
-createPlanet(1.2, 'venus.jpg', 22, 'VENUS');
-createPlanet(1.3, 'earth.jpg', 30, 'EARTH');
-createPlanet(1.0, 'mars.jpg', 38, 'MARS');
-createPlanet(3.5, 'Jupiter.jpg', 55, 'JUPITER');
-createPlanet(3.0, 'saturn.jpg', 75, 'SATURN', true);
-createPlanet(2.0, 'uranus.jpg', 90, 'URANUS');
-createPlanet(2.0, 'neptune.jpg', 105, 'NEPTUNE');
+createPlanet(0.8, 'mercury.jpg', 18, 'MERCURY');
+createPlanet(1.2, 'venus.jpg', 28, 'VENUS');
+createPlanet(1.3, 'earth.jpg', 38, 'EARTH');
+createPlanet(1.0, 'mars.jpg', 48, 'MARS');
+createPlanet(3.5, 'Jupiter.jpg', 65, 'JUPITER');
+createPlanet(3.0, 'saturn.jpg', 85, 'SATURN', true);
+createPlanet(2.0, 'uranus.jpg', 105, 'URANUS');
+createPlanet(2.0, 'neptune.jpg', 125, 'NEPTUNE');
 
-camera.position.set(0, 120, 180);
+// အစပိုင်း ကင်မရာအနေအထား
+camera.position.set(0, 150, 200);
 camera.lookAt(0, 0, 0);
 
 // Interaction
@@ -80,9 +92,13 @@ function onInteract(e) {
     const intersects = raycaster.intersectObjects(scene.children, true);
     
     if(intersects.length > 0) {
-        const obj = intersects[0].object.userData.name ? intersects[0].object : intersects[0].object.parent;
-        const name = obj.userData.name;
+        let obj = intersects[0].object;
+        // အကယ်၍ Ring ကိုနှိပ်မိရင် Parent (Planet) ကိုယူမယ်
+        while (obj.parent && !obj.userData.name) {
+            obj = obj.parent;
+        }
         
+        const name = obj.userData.name;
         if(name && planetData[name]) {
             targetPlanet = obj;
             isZoomed = true;
@@ -99,24 +115,30 @@ window.addEventListener('touchstart', onInteract);
 function animate() {
     requestAnimationFrame(animate);
     
-    sunMesh.rotation.y += 0.003;
+    sunMesh.rotation.y += 0.002;
     planets.forEach((p, i) => {
-        p.pivot.rotation.y += 0.008 / (i + 1);
+        p.pivot.rotation.y += 0.005 / (i + 1);
         p.mesh.rotation.y += 0.01;
     });
 
     if (isZoomed && targetPlanet) {
-        // ဂြိုဟ်ရဲ့ ကမ္ဘာလုံးဆိုင်ရာ တည်နေရာကို တွက်ချက်ခြင်း
         const targetPos = new THREE.Vector3();
         targetPlanet.getWorldPosition(targetPos);
         
-        // Camera ကို ဂြိုဟ်နားအထိ ဖြည်းဖြည်းချင်း တိုးသွားစေခြင်း (Lerp)
-        const zoomOffset = targetPlanet.userData.size * 5;
-        camera.position.lerp(new THREE.Vector3(targetPos.x, targetPos.y + zoomOffset, targetPos.z + zoomOffset), 0.05);
+        // Cinematic Zoom logic: ဂြိုဟ်ရဲ့ အနီးကို အလှပဆုံး Angle နဲ့ ကပ်သွားမယ်
+        const zoomDist = targetPlanet.userData.size * 4;
+        const tempCameraPos = new THREE.Vector3(
+            targetPos.x + zoomDist, 
+            targetPos.y + (zoomDist / 2), 
+            targetPos.z + zoomDist
+        );
+        
+        camera.position.lerp(tempCameraPos, 0.05); // အမြန်နှုန်း 0.05 နဲ့ ချောချောမွေ့မွေ့ သွားမယ်
         camera.lookAt(targetPos);
     } else {
-        // ပုံမှန် မြင်ကွင်း (အဝေးကနေ ငုံ့ကြည့်နေတဲ့ vibe) သို့ ပြန်သွားခြင်း
-        camera.position.lerp(new THREE.Vector3(0, 120, 180), 0.02);
+        // Overview Mode: အဝေးကနေ ငုံ့ကြည့်တဲ့ အမြင်ကို ပြန်သွားမယ်
+        const defaultPos = new THREE.Vector3(0, 150, 250);
+        camera.position.lerp(defaultPos, 0.02);
         camera.lookAt(0, 0, 0);
     }
 
